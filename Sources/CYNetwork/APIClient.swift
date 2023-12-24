@@ -1,3 +1,3 @@
 import Foundation
 
-class APIClient { }
+final public class APIClient { }
