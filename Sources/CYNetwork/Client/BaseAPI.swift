@@ -9,9 +9,9 @@ enum LogLevel {
 final public class BaseAPI {
     
     public init(
-        session: URLSession
+        configuration: URLSessionConfiguration
     ) {
-        self.session = session
+        self.session = URLSession(configuration: configuration)
     }
     
     private let session: URLSession

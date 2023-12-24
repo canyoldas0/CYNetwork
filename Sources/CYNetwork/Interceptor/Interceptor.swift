@@ -6,16 +6,17 @@ public protocol Interceptor {
 
 public class InterceptorHandler {
     
-    private let callbackQueue: DispatchQueue
     private let interceptors: [Interceptor]
     
     init(
-        interceptors: [Interceptor],
-        callbackQueue: DispatchQueue = .main
+        interceptors: [Interceptor]
     ) {
-        self.callbackQueue = callbackQueue
         self.interceptors = interceptors
     }
     
-    
+    func interceptChain(request: inout URLRequest) async throws {
+        for interceptor in interceptors {
+            try await interceptor.intercept(request: &request)
+        }
+    }
 }

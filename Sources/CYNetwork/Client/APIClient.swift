@@ -3,26 +3,28 @@ import Foundation
 
 public protocol APIClientProtocol {
     
-    public var interceptorHandler: InterceptorHandler { get }
+    var interceptorHandler: InterceptorHandler { get }
     
-    public func perform<T: Decodable>(_ request: URLRequest) async throws -> T
+    func perform<T: Decodable>(_ request: URLRequest) async throws -> T
 }
 
 public class APIClient: APIClientProtocol {
     
-    let interceptorHandler: InterceptorHandler
+    public private(set) var interceptorHandler: InterceptorHandler
     private let baseAPI: BaseAPI
     
-    init(
+    public init(
         interceptorHandler: InterceptorHandler,
         sessionConfiguration: URLSessionConfiguration = .default
     ) {
         self.interceptorHandler = interceptorHandler
-        self.baseAPI = BaseAPI(session: sessionConfiguration)
+        self.baseAPI = BaseAPI(configuration: sessionConfiguration)
     }
     
-    func perform<T: Decodable>(_ request: URLRequest) async throws -> T {
+    public func perform<T: Decodable>(_ request: URLRequest) async throws -> T {
+        var interceptedRequest = request
+        try await interceptorHandler.interceptChain(request: &interceptedRequest)
         
-        interceptorHandler
+        return try await baseAPI.execute(request: interceptedRequest)
     }
 }
