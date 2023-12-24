@@ -1,10 +1,13 @@
 import Foundation
 
 public protocol Interceptor {
+    
+    var id: String { get set }
+
     func intercept(request: inout URLRequest) async throws
 }
 
-public class InterceptorHandler {
+public class NetworkTransporter {
     
     private let interceptors: [Interceptor]
     
@@ -14,7 +17,8 @@ public class InterceptorHandler {
         self.interceptors = interceptors
     }
     
-    func interceptChain(request: inout URLRequest) async throws {
+    func kickoffChain(
+        request: inout URLRequest) async throws {
         for interceptor in interceptors {
             try await interceptor.intercept(request: &request)
         }
