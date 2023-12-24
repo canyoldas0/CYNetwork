@@ -4,7 +4,7 @@ public protocol Interceptor {
     
     var id: String { get set }
 
-    func intercept(request: inout URLRequest) async throws
+    func intercept(request: inout URLRequest)
 }
 
 public class NetworkTransporter {
@@ -18,9 +18,9 @@ public class NetworkTransporter {
     }
     
     func kickoffChain(
-        request: inout URLRequest) async throws {
+        request: inout URLRequest) {
         for interceptor in interceptors {
-            try await interceptor.intercept(request: &request)
+            interceptor.intercept(request: &request)
         }
     }
 }
