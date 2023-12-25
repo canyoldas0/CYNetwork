@@ -1,16 +1,17 @@
 
 import Foundation
 
+
 public protocol APIClientProtocol {
     
-    var networkTransporter: NetworkTransporter { get }
+    var networkTransporter: NetworkTransportProtocol { get }
     
-    func perform<T: Decodable>(_ request: URLRequest) async throws -> T
+//    func perform<T: Decodable>(_ request: URLRequest) async throws -> T
 }
 
 public class APIClient: APIClientProtocol {
     
-    public private(set) var networkTransporter: NetworkTransporter
+    public private(set) var networkTransporter: NetworkTransportProtocol
     
     public init(
         networkTransporter: NetworkTransporter,
@@ -19,8 +20,8 @@ public class APIClient: APIClientProtocol {
         self.networkTransporter = networkTransporter
     }
     
-    public func perform<T: Decodable>(_ request: URLRequest, resultHandler: @escaping (Result<T,Error>) -> Void)  {
+    public func perform<T: Decodable>(_ request: URLRequest) async throws -> T  {
         var interceptedRequest = request
-        try await networkTransporter.kickoffChain(request: &interceptedRequest)
+        networkTransporter.send()
     }
 }

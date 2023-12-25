@@ -8,7 +8,6 @@ public protocol URLRequestProtocol {
     func returnUrlRequest() throws -> URLRequest
 }
 
-
 class ApiServiceProvider<T: Encodable>: URLRequestProtocol {
     
     private var method: HTTPMethod
@@ -29,14 +28,14 @@ class ApiServiceProvider<T: Encodable>: URLRequestProtocol {
         self.data = data
     }
     
-     func returnUrlRequest() throws -> URLRequest {
+    func returnUrlRequest() throws -> URLRequest {
         
-         guard var url = URL(string: baseUrl) else { throw NetworkError.missingURL }
+        guard var url = URL(string: baseUrl) else { throw NetworkError.missingURL }
         
         if let path = path {
             url = url.appendingPathComponent(path)
         }
-         
+        
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.headers = headers
