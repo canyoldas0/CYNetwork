@@ -53,25 +53,6 @@ public class APIClient: APIClientProtocol {
         }
 }
 
-public protocol HTTPRequest: Encodable {
-    associatedtype Data: Decodable
-}
-
-open class HTTPResponse<Request: HTTPRequest> {
-    
-    var httpResponse: HTTPURLResponse
-    var rawData: Data
-    var parsedData: Request.Data?
-    
-    init(
-        httpResponse: HTTPURLResponse,
-        rawData: Data
-    ) {
-        self.httpResponse = httpResponse
-        self.rawData = rawData
-    }
-}
-
 struct DetailRequest: HTTPRequest {
     let id: String
  
