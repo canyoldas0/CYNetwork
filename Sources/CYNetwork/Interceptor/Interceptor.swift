@@ -4,5 +4,5 @@ public protocol Interceptor {
     
     var id: String { get set }
 
-    func intercept(request: URLRequest)
+    func intercept<Request: HTTPRequest>(request: Request, response: HTTPResponse<Request>)
 }

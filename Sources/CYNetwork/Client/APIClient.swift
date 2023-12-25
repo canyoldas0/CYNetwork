@@ -21,10 +21,10 @@ public class APIClient: APIClientProtocol {
         self.networkTransporter = networkTransporter
     }
     
-    public func perform<T: Decodable>(
-        _ request: HTTPRequest<T>,
+    public func perform<Request: HTTPRequest>(
+        _ request: Request,
         dispatchQueue: DispatchQueue = .main,
-        completion: @escaping (Result<T, Error>) -> Void
+        completion: @escaping (Result<Request.Data, Error>) -> Void
     ) {
         networkTransporter.send(
             request: request,
@@ -33,9 +33,9 @@ public class APIClient: APIClientProtocol {
         )
     }
     
-    public func perform<T: Decodable>(
-        _ request: HTTPRequest<T>,
-        dispatchQueue: DispatchQueue = .main) async throws -> T {
+    public func perform<Request: HTTPRequest>(
+        _ request: Request,
+        dispatchQueue: DispatchQueue = .main) async throws -> Request.Data {
             try await withCheckedThrowingContinuation { continuation in
                 self.perform(
                     request,
@@ -53,18 +53,33 @@ public class APIClient: APIClientProtocol {
         }
 }
 
-// Example Flow - Happy path
-open class HTTPRequest<T: Decodable> { }
+public protocol HTTPRequest: Encodable {
+    associatedtype Data: Decodable
+}
 
-class DetailRequest: HTTPRequest<DetailResponse> {
-    let id: String
+open class HTTPResponse<Request: HTTPRequest> {
     
-    init(id: String) {
-        self.id = id
+    var httpResponse: HTTPURLResponse
+    var rawData: Data
+    var parsedData: Request.Data?
+    
+    init(
+        httpResponse: HTTPURLResponse,
+        rawData: Data
+    ) {
+        self.httpResponse = httpResponse
+        self.rawData = rawData
     }
 }
 
-struct DetailResponse: Decodable { }
+struct DetailRequest: HTTPRequest {
+    let id: String
+ 
+    struct Data: Decodable {
+        let name: String
+    }
+}
+
 
 func fetchData() async throws {
     

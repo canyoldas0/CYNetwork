@@ -11,7 +11,10 @@ public protocol RequestChain: AnyObject {
     
     var interceptors: [Interceptor] { get set }
     
-    func kickoff(request: URLRequest)
+    func kickoff<Request: HTTPRequest>(
+        request: Request,
+        completion: @escaping (Result<Request.Data, Error>) -> Void
+    )
 }
 
 public class NetworkInterceptChain: RequestChain {
@@ -27,13 +30,16 @@ public class NetworkInterceptChain: RequestChain {
         self.interceptors = interceptors
     }
     
-    public func kickoff(
-        request: URLRequest
+    public func kickoff<Request: HTTPRequest>(
+        request: Request,
+        completion: @escaping (Result<Request.Data, Error>) -> Void
     ) {
         guard let firstInterceptor = interceptors.first else {
 //            throw InterceptError.interceptorNotFound
             return
         }
+        
+//        firstInterceptor
         
 //        var interceptedRequest: URLRequest = request
         
