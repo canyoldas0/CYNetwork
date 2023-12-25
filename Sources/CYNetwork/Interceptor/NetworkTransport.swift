@@ -2,8 +2,7 @@ import Foundation
 
 public protocol NetworkTransportProtocol {
     
-    func send<T: Decodable>(
-        request: URLRequest) async throws -> T
+    func send(request: URLRequest)
 }
 
 
@@ -15,11 +14,11 @@ public class NetworkTransporter: NetworkTransportProtocol {
         self.interceptors = interceptors
     }
     
-    public func send<T: Decodable>(
-        request: URLRequest) async throws -> T {
+    public func send(
+        request: URLRequest) {
         let chain = makeRequestChain(interceptors: interceptors)
         
-        return try await chain.kickoff(request: request)
+        chain.kickoff(request: request)
     }
     
     func makeRequestChain(interceptors: [Interceptor]) -> RequestChain {

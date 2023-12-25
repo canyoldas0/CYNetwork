@@ -11,7 +11,7 @@ public protocol RequestChain: AnyObject {
     
     var interceptors: [Interceptor] { get set }
     
-    func kickoff<T: Decodable>(request: URLRequest) async throws -> T
+    func kickoff(request: URLRequest)
 }
 
 public class NetworkInterceptChain: RequestChain {
@@ -27,13 +27,16 @@ public class NetworkInterceptChain: RequestChain {
         self.interceptors = interceptors
     }
     
-    public func kickoff<T: Decodable>(request: URLRequest) async throws -> T {
+    public func kickoff(
+        request: URLRequest
+    ) {
         guard let firstInterceptor = interceptors.first else {
-            throw InterceptError.interceptorNotFound
+//            throw InterceptError.interceptorNotFound
+            return
         }
         
-        var interceptedRequest: URLRequest = request
+//        var interceptedRequest: URLRequest = request
         
-        return try await firstInterceptor.intercept(request: &interceptedRequest)
+//        return try await firstInterceptor.intercept(request: &interceptedRequest)
     }
 }
