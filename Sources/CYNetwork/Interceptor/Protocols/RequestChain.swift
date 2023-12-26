@@ -4,6 +4,8 @@ public protocol RequestChain: AnyObject {
     
     var interceptors: [Interceptor] { get set }
     var errorHandler: ChainErrorHandler? { get }
+    var isCancelled: Bool { get }
+
     
     func kickoff<Request>(
         request: HTTPRequest<Request>,

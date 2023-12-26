@@ -18,7 +18,7 @@ public class NetworkInterceptChain: RequestChain {
     public var interceptors: [Interceptor]
     public var errorHandler: ChainErrorHandler?
     
-    @Atomic private var isCancelled: Bool = false
+    @Atomic public var isCancelled: Bool = false
     
     // MARK: Private
     private var currentIndex: Int
