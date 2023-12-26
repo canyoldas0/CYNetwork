@@ -27,11 +27,13 @@ public class NetworkInterceptChain: RequestChain {
     
     public init(
         interceptors: [Interceptor],
-        dispatchQueue: DispatchQueue = .main
+        dispatchQueue: DispatchQueue = .main,
+        errorHandler: ChainErrorHandler? = nil
     ) {
         self.interceptors = interceptors
-        self.currentIndex = 0
+        self.errorHandler = errorHandler
         self.dispatchQueue = dispatchQueue
+        self.currentIndex = 0
         
         for (index, interceptor) in interceptors.enumerated() {
           self.interceptorIndexes[interceptor.id] = index

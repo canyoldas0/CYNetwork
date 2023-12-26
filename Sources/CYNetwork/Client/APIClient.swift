@@ -2,22 +2,21 @@
 import Foundation
 
 
-public protocol APIClientProtocol {
+public class APIClient {
     
-    // TODO: Add protocol
-    var networkTransporter: NetworkTransporter { get }
-    
-//    func perform<T: Decodable>(_ request: URLRequest) async throws -> T
-}
-
-public class APIClient: APIClientProtocol {
-    
-    public private(set) var networkTransporter: NetworkTransporter
+    public private(set) var networkTransporter: NetworkTransportProtocol
     
     public init(
-        networkTransporter: NetworkTransporter
+        networkTransporter: NetworkTransportProtocol
     ) {
         self.networkTransporter = networkTransporter
+    }
+    
+    convenience init() {
+        let provider = DefaultInterceptorProvider()
+        let transporter = DefaultRquestChainNetworkTransport(interceptorProvider: provider)
+        
+        self.init(networkTransporter: transporter)
     }
     
     public func perform<Request: Requestable>(
@@ -52,6 +51,10 @@ public class APIClient: APIClientProtocol {
         }
 }
 
+public extension APIClient {
+    static let shared = APIClient()
+}
+
 struct DetailRequest: Requestable {
     let id: String
  
@@ -69,10 +72,7 @@ struct DetailRequest: Requestable {
 }
 
 func fetchData() async throws {
-    
-    let apiClient = APIClient(networkTransporter: .init(interceptors: []))
-    
     let request = DetailRequest(id: "id")
     
-    let data = try await apiClient.perform(request)
+    let data = try await APIClient.shared.perform(request)
 }

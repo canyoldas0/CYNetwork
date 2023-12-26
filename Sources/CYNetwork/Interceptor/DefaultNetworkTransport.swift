@@ -10,12 +10,12 @@ public protocol NetworkTransportProtocol {
 }
 
 
-open class NetworkTransporter: NetworkTransportProtocol {
+open class DefaultRquestChainNetworkTransport: NetworkTransportProtocol {
     
-    private let interceptors: [Interceptor]
+    let interceptorProvider: InterceptorProvider
     
-    init(interceptors: [Interceptor]) {
-        self.interceptors = interceptors
+    init(interceptorProvider: InterceptorProvider) {
+        self.interceptorProvider = interceptorProvider
     }
     
     public func send<Request>(
@@ -23,7 +23,7 @@ open class NetworkTransporter: NetworkTransportProtocol {
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<Request.Data,Error>) -> Void
     ) where Request: Requestable {
-        let chain = makeRequestChain(interceptors: interceptors)
+        let chain = makeRequestChain(for: request)
         
         let request = HTTPRequest(request: request, additionalHeaders: [:])
         chain.kickoff(
@@ -32,7 +32,10 @@ open class NetworkTransporter: NetworkTransportProtocol {
         )
     }
     
-    open func makeRequestChain(interceptors: [Interceptor]) -> RequestChain {
-        return NetworkInterceptChain(interceptors: interceptors)
+    open func makeRequestChain<Request>(for request: Request) -> RequestChain where Request: Requestable {
+        return NetworkInterceptChain(
+            interceptors: interceptorProvider.interceptors(for: request),
+            errorHandler: interceptorProvider.additionalErrorHandler(for: request)
+        )
     }
 }
