@@ -6,6 +6,6 @@ public protocol Interceptor {
 
     func intercept<Request: HTTPRequest>(
         request: Request,
-        response: HTTPResponse<Request>
+        response: HTTPResponse<Request>?
     )
 }

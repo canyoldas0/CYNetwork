@@ -69,7 +69,6 @@ struct DetailRequest: HTTPRequest {
     }
 }
 
-
 func fetchData() async throws {
     
     let apiClient = APIClient(networkTransporter: .init(interceptors: []))
