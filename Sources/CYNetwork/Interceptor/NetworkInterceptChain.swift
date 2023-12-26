@@ -2,8 +2,16 @@ import Foundation
 
 public class NetworkInterceptChain: RequestChain {
     
-    public enum InterceptError: String, LocalizedError {
-        case interceptorNotFound = "There is no interceptor available."
+    public enum InterceptChainError: Error, LocalizedError {
+        case interceptorNotFound
+        case interceptorIndexNotFound(Int)
+        
+        public var errorDescription: String? {
+            switch self {
+            case .interceptorNotFound: "There is no interceptor available."
+            case .interceptorIndexNotFound(let index): "There is no interceptor found at index: \(index)"
+            }
+        }
     }
     
     // MARK: Public
@@ -38,7 +46,7 @@ public class NetworkInterceptChain: RequestChain {
         
         guard let firstInterceptor = interceptors.first else {
             handleErrorAsync(
-                InterceptError.interceptorNotFound,
+                InterceptChainError.interceptorNotFound,
                 request: request,
                 response: nil,
                 completion: completion
@@ -122,6 +130,23 @@ public class NetworkInterceptChain: RequestChain {
                 response: response,
                 completion: completion
             )
+        } else {
+            // If we already have the parsedData, then we can return it.
+            if let result = response?.parsedData {
+                returnValue(
+                    for: request,
+                    value: result,
+                    completion: completion
+                )
+            } else {
+                // this means that index is not found on interceptors, and we don't have parsedData.
+                handleErrorAsync(
+                    InterceptChainError.interceptorIndexNotFound(interceptorIndex),
+                    request: request,
+                    response: response,
+                    completion: completion
+                )
+            }
         }
     }
     

@@ -4,11 +4,12 @@ public class TokenProviderInterceptor: Interceptor {
 
     public var id: String = "token_provider_interceptor"
    
-    public func intercept<Request: HTTPRequest>(
+    public func intercept<Request>(
         chain: RequestChain,
         request: Request,
-        response: HTTPResponse<Request>?
-    ) {
-        // TODO
+        response: HTTPResponse<Request>?,
+        completion: @escaping (Result<Request.Data, Error>) -> Void
+    ) where Request : HTTPRequest {
+        //
     }
 }
