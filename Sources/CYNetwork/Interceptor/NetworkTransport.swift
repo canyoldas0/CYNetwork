@@ -2,7 +2,11 @@ import Foundation
 
 public protocol NetworkTransportProtocol {
     
-//    func send(request: URLRequest)
+    func send<Request>(
+        request: Request,
+        dispatchQueue: DispatchQueue,
+        completion: @escaping (Result<Request.Data,Error>) -> Void
+    ) where Request: HTTPRequest
 }
 
 
@@ -14,11 +18,11 @@ public class NetworkTransporter: NetworkTransportProtocol {
         self.interceptors = interceptors
     }
     
-    public func send<Request: HTTPRequest>(
+    public func send<Request>(
         request: Request,
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<Request.Data,Error>) -> Void
-    ) {
+    ) where Request: HTTPRequest {
         let chain = makeRequestChain(interceptors: interceptors)
         chain.kickoff(
             request: request,

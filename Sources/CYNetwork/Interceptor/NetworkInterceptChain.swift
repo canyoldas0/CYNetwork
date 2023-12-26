@@ -49,7 +49,8 @@ public class NetworkInterceptChain: RequestChain {
         firstInterceptor.intercept(
             chain: self,
             request: request,
-            response: nil
+            response: nil,
+            completion: completion
         )
     }
     
@@ -97,6 +98,44 @@ public class NetworkInterceptChain: RequestChain {
             dispatchQueue.async {
               completion(result)
             }
+        }
+    }
+    
+    public func proceed<Request>(
+        interceptorIndex: Int,
+        request: Request,
+        response: HTTPResponse<Request>?,
+        completion: @escaping (Result<Request.Data, Error>) -> Void
+    ) where Request : HTTPRequest {
+        guard !self.isCancelled else {
+          return
+        }
+        
+        if self.interceptors.indices.contains(interceptorIndex) {
+            self.currentIndex = interceptorIndex
+            
+            let currentInterceptor = interceptors[currentIndex]
+            
+            currentInterceptor.intercept(
+                chain: self,
+                request: request,
+                response: response,
+                completion: completion
+            )
+        }
+    }
+    
+    public func returnValue<Request>(
+        for request: Request,
+        value: Request.Data,
+        completion: @escaping (Result<Request.Data, Error>) -> Void
+    ) where Request : HTTPRequest {
+        guard !self.isCancelled else {
+          return
+        }
+        
+        self.dispatchQueue.async {
+            completion(.success(value))
         }
     }
 }

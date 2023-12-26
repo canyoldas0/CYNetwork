@@ -21,4 +21,17 @@ public protocol RequestChain: AnyObject {
         request: Request,
         completion: @escaping (Result<Request.Data, Error>) -> Void
     ) where Request: HTTPRequest
+    
+    func proceed<Request>(
+      interceptorIndex: Int,
+      request: Request,
+      response: HTTPResponse<Request>?,
+      completion: @escaping (Result<Request.Data, Error>) -> Void
+    )
+    
+    func returnValue<Request>(
+      for request: Request,
+      value: Request.Data,
+      completion: @escaping (Result<Request.Data, Error>) -> Void
+    ) where Request : HTTPRequest
 }
