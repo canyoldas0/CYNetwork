@@ -87,6 +87,7 @@ public class NetworkInterceptChain: RequestChain {
         }
         
         firstInterceptor.intercept(
+            chain: self,
             request: request,
             response: nil
         )
@@ -117,14 +118,25 @@ public class NetworkInterceptChain: RequestChain {
           return
         }
         
+        // Handle error if there is an error handler assigned.
         guard let errorHandler else {
+            // if not return error directly.
             dispatchQueue.async {
                 completion(.failure(error))
             }
             return
         }
         
-       // Handle error
-        
+        let dispatchQueue = self.dispatchQueue
+        errorHandler.handleErrorAsync(
+            error: error,
+            chain: self,
+            request: request,
+            response: response
+        ) { result in
+            dispatchQueue.async {
+              completion(result)
+            }
+        }
     }
 }
