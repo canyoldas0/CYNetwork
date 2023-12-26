@@ -59,6 +59,14 @@ struct DetailRequest: HTTPRequest {
     struct Data: Decodable {
         let name: String
     }
+    
+    func toUrlRequest() throws -> URLRequest {
+        try ApiServiceProvider.returnUrlRequest(
+            baseUrl: "",
+            path: nil,
+            data: self
+        )
+    }
 }
 
 
