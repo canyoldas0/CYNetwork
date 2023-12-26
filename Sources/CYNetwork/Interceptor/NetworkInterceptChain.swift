@@ -1,44 +1,4 @@
-//
-//  File.swift
-//  
-//
-//  Created by Can Yoldas on 25/12/2023.
-//
-
 import Foundation
-
-public protocol ChainErrorHandler {
-    
-    func handleErrorAsync<Request>(
-        error: Error,
-        chain: RequestChain,
-        request: Request,
-        response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, Error>) -> Void) where Request: HTTPRequest
-}
-
-public protocol RequestChain: AnyObject {
-    
-    var interceptors: [Interceptor] { get set }
-    var errorHandler: ChainErrorHandler? { get }
-    
-    func kickoff<Request>(
-        request: Request,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request: HTTPRequest
-    
-    func handleErrorAsync<Request>(
-      _ error: Error,
-      request: Request,
-      response: HTTPResponse<Request>?,
-      completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest
-    
-    func retry<Request>(
-        request: Request,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request: HTTPRequest
-}
 
 public class NetworkInterceptChain: RequestChain {
     
@@ -128,7 +88,7 @@ public class NetworkInterceptChain: RequestChain {
         }
         
         let dispatchQueue = self.dispatchQueue
-        errorHandler.handleErrorAsync(
+        errorHandler.handleError(
             error: error,
             chain: self,
             request: request,
