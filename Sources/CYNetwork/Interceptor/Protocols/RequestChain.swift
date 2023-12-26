@@ -34,4 +34,6 @@ public protocol RequestChain: AnyObject {
       value: Request.Data,
       completion: @escaping (Result<Request.Data, Error>) -> Void
     ) where Request : HTTPRequest
+    
+    func cancel()
 }

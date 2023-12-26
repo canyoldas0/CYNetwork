@@ -163,4 +163,18 @@ public class NetworkInterceptChain: RequestChain {
             completion(.success(value))
         }
     }
+    
+    public func cancel() {
+        guard !self.isCancelled else {
+            return
+        }
+        
+        self.$isCancelled.mutate { $0 = true }
+        
+        for interceptor in self.interceptors {
+          if let cancellableInterceptor = interceptor as? Cancellable {
+            cancellableInterceptor.cancel()
+          }
+        }
+    }
 }

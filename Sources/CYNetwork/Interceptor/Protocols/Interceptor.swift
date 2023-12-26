@@ -11,3 +11,7 @@ public protocol Interceptor {
         completion: @escaping (Result<Request.Data, Error>) -> Void
     ) where Request: HTTPRequest
 }
+
+public protocol Cancellable {
+    func cancel()
+}
