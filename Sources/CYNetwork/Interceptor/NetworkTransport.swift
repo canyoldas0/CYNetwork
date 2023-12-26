@@ -6,11 +6,11 @@ public protocol NetworkTransportProtocol {
         request: Request,
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<Request.Data,Error>) -> Void
-    ) where Request: HTTPRequest
+    ) where Request: Requestable
 }
 
 
-public class NetworkTransporter: NetworkTransportProtocol {
+open class NetworkTransporter: NetworkTransportProtocol {
     
     private let interceptors: [Interceptor]
     
@@ -22,15 +22,17 @@ public class NetworkTransporter: NetworkTransportProtocol {
         request: Request,
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<Request.Data,Error>) -> Void
-    ) where Request: HTTPRequest {
+    ) where Request: Requestable {
         let chain = makeRequestChain(interceptors: interceptors)
+        
+        let request = HTTPRequest(request: request, additionalHeaders: [:])
         chain.kickoff(
             request: request,
             completion: completion
         )
     }
     
-    func makeRequestChain(interceptors: [Interceptor]) -> RequestChain {
+    open func makeRequestChain(interceptors: [Interceptor]) -> RequestChain {
         return NetworkInterceptChain(interceptors: interceptors)
     }
 }

@@ -39,9 +39,9 @@ public class NetworkInterceptChain: RequestChain {
     }
     
     public func kickoff<Request>(
-        request: Request,
+        request: HTTPRequest<Request>,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request: HTTPRequest {
+    ) where Request: Requestable {
         assert(self.currentIndex == 0)
         
         guard let firstInterceptor = interceptors.first else {
@@ -63,9 +63,9 @@ public class NetworkInterceptChain: RequestChain {
     }
     
     public func retry<Request>(
-        request: Request,
+        request: HTTPRequest<Request>,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest {
+    ) where Request : Requestable {
         guard !self.isCancelled else {
             return
         }
@@ -79,10 +79,10 @@ public class NetworkInterceptChain: RequestChain {
     
     public func handleErrorAsync<Request>(
         _ error: Error,
-        request: Request,
+        request: HTTPRequest<Request>,
         response: HTTPResponse<Request>?,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest {
+    ) where Request : Requestable {
         guard !self.isCancelled else {
           return
         }
@@ -111,10 +111,10 @@ public class NetworkInterceptChain: RequestChain {
     
     public func proceed<Request>(
         interceptorIndex: Int,
-        request: Request,
+        request: HTTPRequest<Request>,
         response: HTTPResponse<Request>?,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest {
+    ) where Request : Requestable {
         guard !self.isCancelled else {
           return
         }
@@ -151,11 +151,11 @@ public class NetworkInterceptChain: RequestChain {
     }
     
     public func proceed<Request>(
-        request: Request,
+        request: HTTPRequest<Request>,
         interceptor: Interceptor,
         response: HTTPResponse<Request>?,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest {
+    ) where Request : Requestable {
         
         guard let interceptorIndex = interceptorIndexes[interceptor.id] else {
             handleErrorAsync(
@@ -178,10 +178,10 @@ public class NetworkInterceptChain: RequestChain {
     }
     
     public func returnValue<Request>(
-        for request: Request,
+        for request: HTTPRequest<Request>,
         value: Request.Data,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest {
+    ) where Request : Requestable {
         guard !self.isCancelled else {
           return
         }

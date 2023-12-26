@@ -1,9 +1,5 @@
 import Foundation
 
-public protocol Requestable: Encodable {
-    func request() throws -> URLRequest
-}
-
 public protocol URLRequestProtocol {
     static func returnUrlRequest<T: Encodable>(
         method: HTTPMethod,

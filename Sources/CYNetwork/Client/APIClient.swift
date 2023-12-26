@@ -15,13 +15,12 @@ public class APIClient: APIClientProtocol {
     public private(set) var networkTransporter: NetworkTransporter
     
     public init(
-        networkTransporter: NetworkTransporter,
-        sessionConfiguration: URLSessionConfiguration = .default
+        networkTransporter: NetworkTransporter
     ) {
         self.networkTransporter = networkTransporter
     }
     
-    public func perform<Request: HTTPRequest>(
+    public func perform<Request: Requestable>(
         _ request: Request,
         dispatchQueue: DispatchQueue = .main,
         completion: @escaping (Result<Request.Data, Error>) -> Void
@@ -33,7 +32,7 @@ public class APIClient: APIClientProtocol {
         )
     }
     
-    public func perform<Request: HTTPRequest>(
+    public func perform<Request: Requestable>(
         _ request: Request,
         dispatchQueue: DispatchQueue = .main) async throws -> Request.Data {
             try await withCheckedThrowingContinuation { continuation in
@@ -53,7 +52,7 @@ public class APIClient: APIClientProtocol {
         }
 }
 
-struct DetailRequest: HTTPRequest {
+struct DetailRequest: Requestable {
     let id: String
  
     struct Data: Decodable {

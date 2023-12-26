@@ -6,41 +6,41 @@ public protocol RequestChain: AnyObject {
     var errorHandler: ChainErrorHandler? { get }
     
     func kickoff<Request>(
-        request: Request,
+        request: HTTPRequest<Request>,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request: HTTPRequest
+    ) where Request: Requestable
     
     func handleErrorAsync<Request>(
       _ error: Error,
-      request: Request,
+      request: HTTPRequest<Request>,
       response: HTTPResponse<Request>?,
       completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest
+    ) where Request : Requestable
     
     func retry<Request>(
-        request: Request,
+        request: HTTPRequest<Request>,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request: HTTPRequest
+    ) where Request: Requestable
     
     func proceed<Request>(
       interceptorIndex: Int,
-      request: Request,
+      request: HTTPRequest<Request>,
       response: HTTPResponse<Request>?,
       completion: @escaping (Result<Request.Data, Error>) -> Void
-    )
+    ) where Request: Requestable
     
     func proceed<Request>(
-      request: Request,
+      request: HTTPRequest<Request>,
       interceptor: any Interceptor,
       response: HTTPResponse<Request>?,
       completion: @escaping (Result<Request.Data, Error>) -> Void
-    )
+    ) where Request: Requestable
     
     func returnValue<Request>(
-      for request: Request,
+      for request: HTTPRequest<Request>,
       value: Request.Data,
       completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : HTTPRequest
+    ) where Request : Requestable
     
     func cancel()
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-open class HTTPResponse<Request: HTTPRequest> {
+open class HTTPResponse<Request: Requestable> {
     
     var httpResponse: HTTPURLResponse
     var rawData: Data

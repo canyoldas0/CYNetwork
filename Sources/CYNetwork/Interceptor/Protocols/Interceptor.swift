@@ -6,10 +6,10 @@ public protocol Interceptor {
 
     func intercept<Request>(
         chain: RequestChain,
-        request: Request,
+        request: HTTPRequest<Request>,
         response: HTTPResponse<Request>?,
         completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request: HTTPRequest
+    ) where Request: Requestable
 }
 
 public protocol Cancellable {
