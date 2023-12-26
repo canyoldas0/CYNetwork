@@ -6,6 +6,8 @@ open class DefaultInterceptorProvider: InterceptorProvider {
     open func interceptors<Request>(
         for request: Request
     ) -> [Interceptor] where Request : Requestable {
-        []
+        [
+            MaxRetryInterceptor(maxRetry: 3)
+        ]
     }
 }

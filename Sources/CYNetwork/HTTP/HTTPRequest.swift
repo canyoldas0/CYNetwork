@@ -6,6 +6,10 @@ open class HTTPRequest<Request: Requestable> {
     open var additionalHeaders: [String: String]
     public var rawRequest: Request
     
+    public var requestName: String {
+        String(describing: rawRequest.self)
+    }
+    
     public init(
         request: Request,
         additionalHeaders: [String : String]
