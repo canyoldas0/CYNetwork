@@ -14,7 +14,8 @@ open class DefaultInterceptorProvider: InterceptorProvider {
     ) -> [Interceptor] where Request : Requestable {
         [
             MaxRetryInterceptor(maxRetry: 3),
-            NetworkFetchInterceptor(client: self.client)
+            NetworkFetchInterceptor(client: self.client),
+            JSONDecodingInterceptor()
         ]
     }
 }
