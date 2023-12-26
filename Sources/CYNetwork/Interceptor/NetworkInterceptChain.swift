@@ -150,6 +150,33 @@ public class NetworkInterceptChain: RequestChain {
         }
     }
     
+    public func proceed<Request>(
+        request: Request,
+        interceptor: Interceptor,
+        response: HTTPResponse<Request>?,
+        completion: @escaping (Result<Request.Data, Error>) -> Void
+    ) where Request : HTTPRequest {
+        
+        guard let interceptorIndex = interceptorIndexes[interceptor.id] else {
+            handleErrorAsync(
+                InterceptChainError.interceptorNotFound,
+                request: request,
+                response: response,
+                completion: completion
+            )
+            return
+        }
+        
+        var nextIndex = interceptorIndex + 1
+        
+        proceed(
+            interceptorIndex: nextIndex,
+            request: request,
+            response: response,
+            completion: completion
+        )
+    }
+    
     public func returnValue<Request>(
         for request: Request,
         value: Request.Data,
