@@ -14,9 +14,9 @@ open class TokenProviderInterceptor: Interceptor {
 
     public var id: String = UUID().uuidString
     
-    let currentToken: () -> String?
+    var currentToken: () -> String?
     
-    public init(currentToken: @escaping () -> String) {
+    public init(currentToken: @escaping () -> String?) {
         self.currentToken = currentToken
     }
    
