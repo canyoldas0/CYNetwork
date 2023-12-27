@@ -17,7 +17,7 @@ public class MaxRetryInterceptor: Interceptor {
     private(set) var maxRetry: Int
     private(set) var currentHit: Int = 0
     
-    init(maxRetry: Int) {
+    public init(maxRetry: Int) {
         self.maxRetry = maxRetry
     }
     

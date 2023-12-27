@@ -16,7 +16,7 @@ open class TokenProviderInterceptor: Interceptor {
     
     let currentToken: () -> String?
     
-    init(currentToken: @escaping () -> String) {
+    public init(currentToken: @escaping () -> String) {
         self.currentToken = currentToken
     }
    
