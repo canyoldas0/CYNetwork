@@ -1,6 +1,6 @@
 import Foundation
 
-public class ApiServiceProvider {
+public class URLProvider {
 
     public static func returnUrlRequest<T: Encodable>(
         method: HTTPMethod = .get,
@@ -65,6 +65,5 @@ public class ApiServiceProvider {
         return httpHeaders
     }
 }
-
 
 public struct EmptyEncodable: Encodable { }

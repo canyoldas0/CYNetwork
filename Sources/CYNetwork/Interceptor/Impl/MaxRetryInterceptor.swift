@@ -41,7 +41,7 @@ public class MaxRetryInterceptor: Interceptor {
         }
         
         self.currentHit += 1
-        
+                
         chain.proceed(
             request: request,
             interceptor: self,
