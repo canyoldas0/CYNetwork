@@ -27,6 +27,10 @@ open class HTTPRequest<Request: Requestable> {
         
         return request
     }
+    
+    open func addHeader(key: String, val: String) {
+        additionalHeaders[key] = val
+    }
 }
 
 public protocol Requestable: Encodable {

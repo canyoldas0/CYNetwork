@@ -1,15 +1,48 @@
 import Foundation
 
-public class TokenProviderInterceptor: Interceptor {
+open class TokenProviderInterceptor: Interceptor {
+    
+    enum TokenProviderError: Error, LocalizedError {
+        case tokenNotFound
+        
+        var errorDescription: String? {
+            switch self {
+            case .tokenNotFound: "Token is not found."
+            }
+        }
+    }
 
-    public var id: String = "token_provider_interceptor"
+    public var id: String = UUID().uuidString
+    
+    let currentToken: () -> String?
+    
+    init(currentToken: @escaping () -> String) {
+        self.currentToken = currentToken
+    }
    
-    public func intercept<Request>(
+    open func intercept<Request>(
         chain: RequestChain,
         request: HTTPRequest<Request>,
         response: HTTPResponse<Request>?,
         completion: @escaping (Result<Request.Data, Error>) -> Void
     ) where Request : Requestable {
-        //
+        guard let token = currentToken() else {
+            chain.handleErrorAsync(
+                TokenProviderError.tokenNotFound,
+                request: request,
+                response: response,
+                completion: completion
+            )
+            return
+        }
+        
+        request.addHeader(key: "Authorization", val: "Bearer \(token)")
+        
+        chain.proceed(
+            request: request,
+            interceptor: self,
+            response: response,
+            completion: completion
+        )
     }
 }

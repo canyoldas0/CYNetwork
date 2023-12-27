@@ -1,6 +1,4 @@
-
 import Foundation
-
 
 public class APIClient {
     
@@ -53,28 +51,6 @@ public class APIClient {
 
 public extension APIClient {
     static let shared = APIClient()
-}
-
-struct DetailRequest: Requestable {
-    let id: String
- 
-    struct Data: Decodable {
-        let name: String
-    }
-    
-    func toUrlRequest() throws -> URLRequest {
-        try ApiServiceProvider.returnUrlRequest(
-            baseUrl: "",
-            path: nil,
-            data: self
-        )
-    }
-}
-
-func fetchData() async throws {
-    let request = DetailRequest(id: "id")
-    
-    let data = try await APIClient.shared.perform(request)
 }
 
 // TODO: Add Property wrappers, some properties of the Requestable doesn't need to be in query, exclude them
