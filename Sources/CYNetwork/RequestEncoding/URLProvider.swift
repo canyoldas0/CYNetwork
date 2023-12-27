@@ -1,20 +1,13 @@
 import Foundation
 
-public protocol URLRequestProtocol {
-    static func returnUrlRequest<T: Encodable>(
-        method: HTTPMethod,
-        baseUrl: String,
-        path: String?,
-        data: T?) throws -> URLRequest
-}
 
-public class ApiServiceProvider: URLRequestProtocol {
+public class ApiServiceProvider {
 
     public static func returnUrlRequest<T: Encodable>(
         method: HTTPMethod = .get,
         baseUrl: String,
         path: String?,
-        data: T? = nil) throws -> URLRequest {
+        data: T?) throws -> URLRequest {
         
         guard var url = URL(string: baseUrl) else { throw NetworkError.missingURL }
         
@@ -34,6 +27,19 @@ public class ApiServiceProvider: URLRequestProtocol {
         
         return request
     }
+    
+    public static func returnUrlRequest(
+        method: HTTPMethod = .get,
+        baseUrl: String,
+        path: String?) throws -> URLRequest {
+            
+            try self.returnUrlRequest(
+                method: method,
+                baseUrl: baseUrl,
+                path: path,
+                data: EmptyEncodable()
+            )
+        }
     
     private static func configureEncoding<T: Encodable>(
         method: HTTPMethod,
@@ -60,3 +66,6 @@ public class ApiServiceProvider: URLRequestProtocol {
         return httpHeaders
     }
 }
+
+
+public struct EmptyEncodable: Encodable { }
