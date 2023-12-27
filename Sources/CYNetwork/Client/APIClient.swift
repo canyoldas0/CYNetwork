@@ -76,3 +76,15 @@ func fetchData() async throws {
     
     let data = try await APIClient.shared.perform(request)
 }
+
+// TODO: Add Property wrappers, some properties of the Requestable doesn't need to be in query, exclude them
+/// For example
+/// ```
+/// struct Request: Requestable {
+/// @NonQueryItem var id: String
+/// var cityName: String
+/// }
+///
+/// let request = Request(id: 5, cityName: "Amsterdam")
+///
+/// example url: `dummyApi.com/v2/id/5?cityName=Amsterdam`

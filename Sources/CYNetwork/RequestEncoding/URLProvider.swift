@@ -1,6 +1,5 @@
 import Foundation
 
-
 public class ApiServiceProvider {
 
     public static func returnUrlRequest<T: Encodable>(
