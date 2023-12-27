@@ -14,7 +14,7 @@ public class ApiServiceProvider: URLRequestProtocol {
         method: HTTPMethod = .get,
         baseUrl: String,
         path: String?,
-        data: T) throws -> URLRequest {
+        data: T? = nil) throws -> URLRequest {
         
         guard var url = URL(string: baseUrl) else { throw NetworkError.missingURL }
         
