@@ -4,7 +4,13 @@ public class NetworkFetchInterceptor: Interceptor {
     
     public var id: String = UUID().uuidString
     
+    @Atomic var currentTask: URLSessionTask?
+    
     let client: URLSessionClient
+    
+    deinit {
+        self.client.invalidate()
+    }
     
     public init(client: URLSessionClient) {
         self.client = client
@@ -31,7 +37,7 @@ public class NetworkFetchInterceptor: Interceptor {
             return
         }
         
-        self.client.sendRequest(urlRequest) { [weak self] result in
+        let task = self.client.sendRequest(urlRequest) { [weak self] result in
             guard let self else { return }
             
             guard !chain.isCancelled else {
@@ -60,5 +66,15 @@ public class NetworkFetchInterceptor: Interceptor {
                 )
             }
         }
+        
+        self.$currentTask.mutate { $0 = task }
+    }
+    
+    public func cancel() {
+      guard let task = self.currentTask else {
+        return
+      }
+      
+      task.cancel()
     }
 }
