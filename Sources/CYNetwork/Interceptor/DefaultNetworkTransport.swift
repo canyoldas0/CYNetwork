@@ -10,11 +10,11 @@ public protocol NetworkTransportProtocol {
 }
 
 
-open class DefaultRquestChainNetworkTransport: NetworkTransportProtocol {
+open class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
     
     let interceptorProvider: InterceptorProvider
     
-    init(interceptorProvider: InterceptorProvider) {
+    public init(interceptorProvider: InterceptorProvider) {
         self.interceptorProvider = interceptorProvider
     }
     

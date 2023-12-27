@@ -12,7 +12,7 @@ public class APIClient {
     
     convenience init() {
         let provider = DefaultInterceptorProvider(client: URLSessionClient(sessionConfiguration: .default))
-        let transporter = DefaultRquestChainNetworkTransport(interceptorProvider: provider)
+        let transporter = DefaultRequestChainNetworkTransport(interceptorProvider: provider)
         
         self.init(networkTransporter: transporter)
     }
