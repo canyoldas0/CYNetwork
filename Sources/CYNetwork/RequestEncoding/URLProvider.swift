@@ -57,8 +57,6 @@ public class URLProvider {
         }
     }
     
-  
-    
     private static func headers() -> HTTPHeaders {
         var httpHeaders = HTTPHeaders()
         httpHeaders.add(HTTPHeader(name: HTTPHeaderFields.contentType.value.0, value: HTTPHeaderFields.contentType.value.1))

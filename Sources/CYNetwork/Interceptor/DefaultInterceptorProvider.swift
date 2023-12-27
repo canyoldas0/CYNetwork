@@ -5,7 +5,7 @@ open class DefaultInterceptorProvider: InterceptorProvider {
     
     let client: URLSessionClient
     
-    init(client: URLSessionClient) {
+    public init(client: URLSessionClient) {
         self.client = client
     }
     
