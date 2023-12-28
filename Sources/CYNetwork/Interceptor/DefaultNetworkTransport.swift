@@ -23,7 +23,7 @@ open class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<Request.Data,Error>) -> Void
     ) where Request: Requestable {
-        let chain = makeRequestChain(for: request)
+        let chain = makeRequestChain(for: request, dispatchQueue: dispatchQueue)
         
         let request = HTTPRequest(request: request, additionalHeaders: [:])
         chain.kickoff(
@@ -32,9 +32,10 @@ open class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
         )
     }
     
-    open func makeRequestChain<Request>(for request: Request) -> RequestChain where Request: Requestable {
+    open func makeRequestChain<Request>(for request: Request, dispatchQueue: DispatchQueue) -> RequestChain where Request: Requestable {
         return NetworkInterceptChain(
             interceptors: interceptorProvider.interceptors(for: request),
+            dispatchQueue: dispatchQueue,
             errorHandler: interceptorProvider.additionalErrorHandler(for: request)
         )
     }

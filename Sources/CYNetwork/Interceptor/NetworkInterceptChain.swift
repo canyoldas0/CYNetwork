@@ -130,7 +130,13 @@ public class NetworkInterceptChain: RequestChain {
                 chain: self,
                 request: request,
                 response: response,
-                completion: completion
+                completion: { result in
+                    // Somehow dispatchQueue is dellocated that this doesn't get called unless it's like this.
+                    // TODO: Investigate!
+                    self.dispatchQueue.async {
+                        completion(result)
+                    }
+                }
             )
         } else {
             // If we already have the parsedData, then we can return it.
@@ -169,7 +175,7 @@ public class NetworkInterceptChain: RequestChain {
             return
         }
         
-        var nextIndex = interceptorIndex + 1
+        let nextIndex = interceptorIndex + 1
         
         proceed(
             interceptorIndex: nextIndex,
@@ -188,9 +194,7 @@ public class NetworkInterceptChain: RequestChain {
           return
         }
         
-        self.dispatchQueue.async {
-            completion(.success(value))
-        }
+        completion(.success(value))
     }
     
     public func cancel() {

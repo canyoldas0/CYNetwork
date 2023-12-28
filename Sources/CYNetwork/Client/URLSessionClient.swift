@@ -2,15 +2,16 @@ import Foundation
 
 open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
-    public typealias RawCompletion = (Data?, HTTPURLResponse?, Error?) -> Void
     public typealias Completion = (Result<(Data, HTTPURLResponse), Error>) -> Void
     
     enum URLSessionError: Error, LocalizedError {
         case sessionInvalidated
+        case noHttpResponse
         
         var errorDescription: String? {
             switch self {
             case .sessionInvalidated: "Session is invalidated."
+            case .noHttpResponse: "No Http response has been received."
             }
         }
     }
@@ -34,7 +35,6 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
     
     @discardableResult
     open func sendRequest(_ request: URLRequest,
-                          rawTaskCompletionHandler: RawCompletion? = nil,
                           completion: @escaping Completion) -> URLSessionTask? {
         guard !self.hasBeenInvalidated else {
             completion(.failure(URLSessionError.sessionInvalidated))
@@ -42,7 +42,7 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
         }
         
         let task = self.session.dataTask(with: request)
-        let taskData = TaskData(rawCompletion: rawTaskCompletionHandler, completionBlock: completion)
+        let taskData = TaskData(completionBlock: completion)
         self.$tasks.mutate { $0[task.taskIdentifier] = taskData }
         
         task.resume()
@@ -65,6 +65,10 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
         cleanup()
     }
     
+    open func clear(task identifier: Int) {
+      self.$tasks.mutate { _ = $0.removeValue(forKey: identifier) }
+    }
+    
     open func clearAllTasks() {
         guard !self.tasks.isEmpty else {
             return
@@ -78,7 +82,7 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
         dataTask: URLSessionDataTask,
         didReceive data: Data
     ) {
-        guard dataTask.state == .completed else {
+        guard dataTask.state != .canceling else {
             // Task is in the process of cancelling, don't bother handling its data.
             return
         }
@@ -88,15 +92,37 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
             return
         }
         
-        taskData.setData(data)
+        taskData.append(additionalData: data)
         
-        if let httpResponse = dataTask.response as? HTTPURLResponse {
-            
-            if let rawCompletion = taskData.rawCompletion {
-                rawCompletion(data, httpResponse, nil)
+ 
+    }
+    
+    open func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didCompleteWithError error: Error?
+    ) {
+        defer { self.clear(task: task.taskIdentifier) }
+        
+        guard let taskData = self.tasks[task.taskIdentifier] else {
+          // This means that task is already cancelled or cleaned, time to return.
+          return
+        }
+        
+        let finalData = taskData.data
+        let finalResponse = taskData.response
+        
+        let completion = taskData.completionBlock
+        
+        if let error {
+            completion(.failure(error))
+        } else {
+            guard let finalResponse else {
+                completion(.failure(URLSessionError.noHttpResponse))
+                return
             }
             
-            taskData.completionBlock(.success((data, httpResponse)))
+            completion(.success((finalData, finalResponse)))
         }
     }
     

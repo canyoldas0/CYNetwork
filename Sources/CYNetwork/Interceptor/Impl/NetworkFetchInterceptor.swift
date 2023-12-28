@@ -8,10 +8,6 @@ public class NetworkFetchInterceptor: Interceptor {
     
     let client: URLSessionClient
     
-    deinit {
-        self.client.invalidate()
-    }
-    
     public init(client: URLSessionClient) {
         self.client = client
     }
