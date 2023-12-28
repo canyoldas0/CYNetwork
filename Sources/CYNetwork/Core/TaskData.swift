@@ -5,7 +5,7 @@ public class TaskData {
   
   public let rawCompletion: URLSessionClient.RawCompletion?
   public let completionBlock: URLSessionClient.Completion
-  private(set) var data: Data = Data()
+  private(set) var data: Data?
   private(set) var response: HTTPURLResponse? = nil
   
   init(rawCompletion: URLSessionClient.RawCompletion?,
@@ -15,7 +15,7 @@ public class TaskData {
   }
   
   func append(additionalData: Data) {
-    self.data.append(additionalData)
+    self.data?.append(additionalData)
   }
 
   func reset(data: Data?) {
@@ -26,6 +26,10 @@ public class TaskData {
 
     self.data = data
   }
+    
+    func setData(_ data: Data) {
+        self.data = data
+    }
   
   func responseReceived(response: URLResponse) {
     if let httpResponse = response as? HTTPURLResponse {

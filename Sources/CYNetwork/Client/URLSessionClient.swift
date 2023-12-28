@@ -88,7 +88,7 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
             return
         }
         
-        taskData.append(additionalData: data)
+        taskData.setData(data)
         
         if let httpResponse = dataTask.response as? HTTPURLResponse {
             
