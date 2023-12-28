@@ -78,7 +78,7 @@ open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegat
         dataTask: URLSessionDataTask,
         didReceive data: Data
     ) {
-        guard dataTask.state != .canceling else {
+        guard dataTask.state == .completed else {
             // Task is in the process of cancelling, don't bother handling its data.
             return
         }
