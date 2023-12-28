@@ -49,9 +49,9 @@ struct URLParameterEncoder: ParameterEncoder {
             urlRequest.url = urlComponents.url
         }
         
-        if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
-            urlRequest.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        }
+//        if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+//            urlRequest.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+//        }
         
     }
 }
@@ -61,9 +61,9 @@ struct JSONParameterEncoder: ParameterEncoder {
         do {
             let jsonAsData = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
             urlRequest.httpBody = jsonAsData
-            if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            }
+//            if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+//                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            }
         } catch {
             throw NetworkError.encodingFailed
         }
