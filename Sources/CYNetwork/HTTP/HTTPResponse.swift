@@ -2,11 +2,11 @@ import Foundation
 
 open class HTTPResponse<Request: Requestable> {
     
-    var httpResponse: HTTPURLResponse
-    var rawData: Data
-    var parsedData: Request.Data?
+    public var httpResponse: HTTPURLResponse
+    public var rawData: Data
+    public var parsedData: Request.Data?
     
-    init(
+    public init(
         httpResponse: HTTPURLResponse,
         rawData: Data
     ) {
