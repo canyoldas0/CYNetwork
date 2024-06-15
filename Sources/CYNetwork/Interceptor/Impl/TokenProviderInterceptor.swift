@@ -26,17 +26,9 @@ open class TokenProviderInterceptor: Interceptor {
         response: HTTPResponse<Request>?,
         completion: @escaping (Result<Request.Data, Error>) -> Void
     ) where Request : Requestable {
-        guard let token = currentToken() else {
-            chain.handleErrorAsync(
-                TokenProviderError.tokenNotFound,
-                request: request,
-                response: response,
-                completion: completion
-            )
-            return
+        if let token = currentToken() {
+            request.addHeader(key: "Authorization", val: "Bearer \(token)")
         }
-        
-        request.addHeader(key: "Authorization", val: "Bearer \(token)")
         
         chain.proceed(
             request: request,
