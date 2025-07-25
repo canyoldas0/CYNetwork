@@ -1,76 +1,74 @@
 import Foundation
 
 public class NetworkFetchInterceptor: Interceptor {
-    
     public var id: String = UUID().uuidString
-    
+
     @Atomic var currentTask: URLSessionTask?
-    
+
     let client: URLSessionClient
-    
+
     public init(client: URLSessionClient) {
         self.client = client
     }
-    
+
     public func intercept<Request>(
         chain: RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : Requestable {
-        
-        let urlRequest: URLRequest
-        
+        completion: @escaping HTTPResultHandler<Request>
+    ) where Request: Requestable {
+        var urlRequest: URLRequest
+
         do {
-            urlRequest = try request.toUrlRequest()
+            urlRequest = try URLProvider.urlRequest(from: operation.properties)
         } catch {
             chain.handleErrorAsync(
                 error,
-                request: request,
+                operation: operation,
                 response: response,
                 completion: completion
             )
             return
         }
         
-        let task = self.client.sendRequest(urlRequest) { [weak self] result in
+        let task = client.sendRequest(urlRequest) { [weak self] result in
             guard let self else { return }
-            
+
             guard !chain.isCancelled else {
-              return
+                return
             }
-            
+
             switch result {
-            case .success((let data, let rawResponse)):
+            case let .success((data, rawResponse)):
                 let httpResponse = HTTPResponse<Request>(
                     httpResponse: rawResponse,
                     rawData: data
                 )
 
                 chain.proceed(
-                    request: request,
+                    operation: operation,
                     interceptor: self,
                     response: httpResponse,
                     completion: completion
                 )
-            case .failure(let error):
+            case let .failure(error):
                 chain.handleErrorAsync(
                     error,
-                    request: request,
+                    operation: operation,
                     response: response,
                     completion: completion
                 )
             }
         }
-        
-        self.$currentTask.mutate { $0 = task }
+
+        $currentTask.mutate { $0 = task }
     }
-    
+
     public func cancel() {
-      guard let task = self.currentTask else {
-        return
-      }
-      
-      task.cancel()
+        guard let task = currentTask else {
+            return
+        }
+
+        task.cancel()
     }
 }

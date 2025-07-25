@@ -7,6 +7,6 @@ public enum NetworkError: String, LocalizedError {
     case tokenExpired = "Your session is expired. Please sign in again."
 
     public var errorDescription: String? {
-        self.rawValue
+        rawValue
     }
 }

@@ -20,21 +20,21 @@ import Foundation
 @propertyWrapper
 public struct EncoderIgnorable<T>: Encodable {
     public var wrappedValue: T?
-        
+
     public init(wrappedValue: T?) {
         self.wrappedValue = wrappedValue
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         // Do nothing
     }
 }
 
-extension KeyedEncodingContainer {
-    public mutating func encode<T>(
-        _ value: EncoderIgnorable<T>,
-        forKey key: KeyedEncodingContainer<K>.Key) throws
-    {
+public extension KeyedEncodingContainer {
+    mutating func encode(
+        _ value: EncoderIgnorable<some Any>,
+        forKey key: KeyedEncodingContainer<K>.Key
+    ) throws {
         // Do nothing
     }
 }

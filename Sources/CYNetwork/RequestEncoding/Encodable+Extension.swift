@@ -19,17 +19,17 @@ extension Encodable {
     }
 
     var jsonString: String? {
-        guard let data = self.jsonData else { return nil }
+        guard let data = jsonData else { return nil }
         return String(data: data, encoding: .utf8)
     }
-    
+
     func toJson() -> Data? {
-        return try? JSONEncoder().encode(self)
+        try? JSONEncoder().encode(self)
     }
 }
 
 // TODO: Make injection on this.
-class CodableDateFormatter {
+enum CodableDateFormatter {
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -43,4 +43,3 @@ class CodableDateFormatter {
         return formatter
     }()
 }
-

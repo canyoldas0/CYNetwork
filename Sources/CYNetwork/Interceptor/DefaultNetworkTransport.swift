@@ -1,42 +1,44 @@
 import Foundation
 
 public protocol NetworkTransportProtocol {
-    
-    func send<Request>(
+    func send<Request: Requestable>(
         request: Request,
+        cachePolicy: CachePolicy,
         dispatchQueue: DispatchQueue,
-        completion: @escaping (Result<Request.Data,Error>) -> Void
-    ) where Request: Requestable
+        completion: @escaping HTTPResultHandler<Request>
+    ) -> (any Cancellable)?
 }
 
-
 open class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
-    
     let interceptorProvider: InterceptorProvider
-    
+
     public init(interceptorProvider: InterceptorProvider) {
         self.interceptorProvider = interceptorProvider
     }
-    
-    public func send<Request>(
+    @discardableResult
+    public func send<Request: Requestable>(
         request: Request,
+        cachePolicy: CachePolicy,
         dispatchQueue: DispatchQueue,
-        completion: @escaping (Result<Request.Data,Error>) -> Void
-    ) where Request: Requestable {
-        let chain = makeRequestChain(for: request, dispatchQueue: dispatchQueue)
+        completion: @escaping HTTPResultHandler<Request>
+    ) -> (any Cancellable)? {
         
-        let request = HTTPRequest(request: request, additionalHeaders: [:])
+        
+        let operation = HTTPOperation(request: request, cachePolicy: cachePolicy)
+        let chain = makeRequestChain(for: operation, dispatchQueue: dispatchQueue)
+        
         chain.kickoff(
-            request: request,
+            operation: operation,
             completion: completion
         )
+        return chain
     }
-    
-    open func makeRequestChain<Request>(for request: Request, dispatchQueue: DispatchQueue) -> RequestChain where Request: Requestable {
-        return NetworkInterceptChain(
-            interceptors: interceptorProvider.interceptors(for: request),
+
+    open func makeRequestChain<Request: Requestable>(for operation: HTTPOperation<Request>, dispatchQueue: DispatchQueue) -> RequestChain {
+        NetworkInterceptChain(
+            interceptors: interceptorProvider.interceptors(for: operation),
             dispatchQueue: dispatchQueue,
-            errorHandler: interceptorProvider.additionalErrorHandler(for: request)
+            errorHandler: interceptorProvider.additionalErrorHandler(for: operation)
         )
     }
 }

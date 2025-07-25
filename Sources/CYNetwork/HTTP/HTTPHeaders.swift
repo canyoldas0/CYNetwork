@@ -1,17 +1,16 @@
 import Foundation
 
 public struct HTTPHeaders {
-    
     private var headers: [HTTPHeader] = []
- 
+
     public init() {}
-    
+
     public init(_ dictionary: [String: String]) {
         self.init()
 
         dictionary.forEach { update(HTTPHeader(name: $0.key, value: $0.value)) }
     }
-    
+
     public mutating func add(_ header: HTTPHeader) {
         update(header)
     }
@@ -26,9 +25,9 @@ public struct HTTPHeaders {
             return
         }
 
-        headers.replaceSubrange(index...index, with: [header])
+        headers.replaceSubrange(index ... index, with: [header])
     }
-    
+
     public var dictionary: [String: String] {
         let namesAndValues = headers.map { ($0.name, $0.value) }
 

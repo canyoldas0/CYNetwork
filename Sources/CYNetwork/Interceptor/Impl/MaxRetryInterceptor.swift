@@ -1,49 +1,48 @@
 import Foundation
 
 public class MaxRetryInterceptor: Interceptor {
-    
     enum RetryError: Error, LocalizedError {
         case exceedRetryLimit(Int, String)
-        
+
         var errorDescription: String? {
             switch self {
-            case .exceedRetryLimit(let hitCount, let requestName): "Request: \(requestName), retried \(hitCount) times without success."
+            case let .exceedRetryLimit(hitCount, requestName): "Request: \(requestName), retried \(hitCount) times without success."
             }
         }
     }
-    
+
     public var id: String = UUID().uuidString
-    
+
     private(set) var maxRetry: Int
     private(set) var currentHit: Int = 0
-    
+
     public init(maxRetry: Int) {
         self.maxRetry = maxRetry
     }
-    
+
     public func intercept<Request>(
         chain: RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
-    ) where Request : Requestable {
+        completion: @escaping HTTPResultHandler<Request>
+    ) where Request: Requestable {
         guard currentHit <= maxRetry else {
-            let error = RetryError.exceedRetryLimit(currentHit, request.requestName)
-            
+            let error = RetryError.exceedRetryLimit(currentHit, operation.properties.requestName)
+
             chain.handleErrorAsync(
                 error,
-                request: request,
+                operation: operation,
                 response: response,
                 completion: completion
             )
-            
+
             return
         }
-        
-        self.currentHit += 1
-                
+
+        currentHit += 1
+
         chain.proceed(
-            request: request,
+            operation: operation,
             interceptor: self,
             response: response,
             completion: completion
