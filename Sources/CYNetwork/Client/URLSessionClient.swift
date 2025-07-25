@@ -1,6 +1,6 @@
 import Foundation
 
-open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegate {
+open class URLSessionClient: NSObject, URLSessionDelegate, URLSessionDataDelegate, @unchecked Sendable  {
     public typealias Completion = (Result<(Data, HTTPURLResponse), Error>) -> Void
 
     enum URLSessionError: Error, LocalizedError {

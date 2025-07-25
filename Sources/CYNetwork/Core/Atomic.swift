@@ -3,7 +3,7 @@ import Foundation
 /// Reference `ApolloClient`
 /// Wrapper for a value protected by an `NSLock`
 @propertyWrapper
-public class Atomic<T> {
+public class Atomic<T>: @unchecked Sendable {
     private let lock = NSLock()
     private var _value: T
 

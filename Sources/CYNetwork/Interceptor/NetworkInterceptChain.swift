@@ -42,7 +42,7 @@ public class NetworkInterceptChain: RequestChain {
     public func kickoff<Request>(
         operation: HTTPOperation<Request>,
         completion: @escaping HTTPResultHandler<Request>
-    ) where Request: Requestable {
+    ) where Request: Requestable & Sendable {
         assert(currentIndex == 0)
 
         guard let firstInterceptor = interceptors.first else {
@@ -66,7 +66,7 @@ public class NetworkInterceptChain: RequestChain {
     public func retry<Request>(
         operation: HTTPOperation<Request>,
         completion: @escaping HTTPResultHandler<Request>
-    ) where Request: Requestable {
+    ) where Request: Requestable & Sendable {
         guard !isCancelled else {
             return
         }
@@ -83,7 +83,7 @@ public class NetworkInterceptChain: RequestChain {
         operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
         completion: @escaping HTTPResultHandler<Request>
-    ) where Request: Requestable {
+    ) where Request: Requestable & Sendable {
         guard !isCancelled else {
             return
         }
@@ -115,7 +115,7 @@ public class NetworkInterceptChain: RequestChain {
         operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
         completion: @escaping HTTPResultHandler<Request>
-    ) where Request: Requestable {
+    ) where Request: Requestable & Sendable {
         guard !isCancelled else {
             return
         }
@@ -163,7 +163,7 @@ public class NetworkInterceptChain: RequestChain {
         interceptor: Interceptor,
         response: HTTPResponse<Request>?,
         completion: @escaping HTTPResultHandler<Request>
-    ) where Request: Requestable {
+    ) where Request: Requestable & Sendable {
         guard let interceptorIndex = interceptorIndexes[interceptor.id] else {
             handleErrorAsync(
                 InterceptChainError.interceptorNotFound,
@@ -188,7 +188,7 @@ public class NetworkInterceptChain: RequestChain {
         for operation: HTTPOperation<Request>,
         result: HTTPResult<Request>,
         completion: @escaping HTTPResultHandler<Request>
-    ) where Request: Requestable {
+    ) where Request: Requestable & Sendable {
         guard !isCancelled else {
             return
         }

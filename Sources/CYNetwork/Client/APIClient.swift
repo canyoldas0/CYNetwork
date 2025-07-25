@@ -1,6 +1,6 @@
 import Foundation
 
-public enum CachePolicy: Hashable {
+public enum CachePolicy: Hashable, Sendable {
     /// Return data from the cache if available, else fetch results from the server.
     case returnCacheDataElseFetch
     ///  Always fetch results from the server.
@@ -13,13 +13,13 @@ public enum CachePolicy: Hashable {
     case returnCacheDataAndFetch
     
     /// The current default cache policy.
-    public static var `default`: CachePolicy = .returnCacheDataElseFetch
+    public static let `default`: CachePolicy = .returnCacheDataElseFetch
 }
 
 
-public class HTTPResult<Request: Requestable> {
+public final class HTTPResult<Request: Requestable>: @unchecked Sendable {
     /// Represents source of data
-    public enum Source: Hashable {
+    public enum Source: Hashable, Sendable {
         case cache
         case server
     }
@@ -44,7 +44,7 @@ public class APIClient {
         self.networkTransporter = networkTransporter
     }
 
-    convenience init() {
+    public convenience init() {
         let provider = DefaultInterceptorProvider(client: URLSessionClient(sessionConfiguration: .default))
         let transporter = DefaultRequestChainNetworkTransport(interceptorProvider: provider)
 
@@ -88,3 +88,4 @@ public class APIClient {
         }
     }
 }
+
