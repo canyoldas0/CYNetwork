@@ -7,6 +7,7 @@ public enum URLProvider {
             method: properties.httpMethod,
             url: properties.url,
             data: properties.data,
+            additionalQueryItems: properties.additionalQueryItems,
             additionalHeaders: properties.additionalHeaders
         )
     }
@@ -15,21 +16,23 @@ public enum URLProvider {
         method: HTTPMethod = .get,
         url: URL,
         data: (any Encodable)?,
+        additionalQueryItems: [URLQueryItem] = [],
         additionalHeaders: [String: String]? = nil
     ) throws -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.headers = headers(additionalHeaders)
+        request.url?.append(queryItems: additionalQueryItems)
         
         try configureEncoding(
             method: method,
             data: data,
             request: &request
         )
-
+        
         return request
     }
-
+    
     public static func returnUrlRequest(
         method: HTTPMethod = .get,
         url: URL
@@ -40,14 +43,14 @@ public enum URLProvider {
             data: EmptyEncodable()
         )
     }
-
+    
     private static func configureEncoding(
         method: HTTPMethod,
         data: (any Encodable)?,
         request: inout URLRequest
     ) throws {
         let params = data?.asDictionary()
-
+        
         switch method {
         case .post, .put:
             try ParameterEncoding.jsonEncoding.encode(urlRequest: &request, parameters: params)
@@ -57,10 +60,10 @@ public enum URLProvider {
             try ParameterEncoding.urlEncoding.encode(urlRequest: &request, parameters: params)
         }
     }
-
+    
     private static func headers(_ appendingHeaders: [String: String]?) -> HTTPHeaders {
         var httpHeaders = HTTPHeaders()
-
+        
         httpHeaders.add(
             HTTPHeader(
                 name: HTTPHeaderFields.accept.value.0,

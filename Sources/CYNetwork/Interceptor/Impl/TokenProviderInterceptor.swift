@@ -1,15 +1,17 @@
 import Foundation
 
-open class TokenProviderInterceptor: Interceptor {
-    enum TokenProviderError: Error, LocalizedError {
-        case tokenNotFound
+public enum TokenProviderError: Error, LocalizedError {
+    case tokenNotFound
 
-        var errorDescription: String? {
-            switch self {
-            case .tokenNotFound: "Token is not found."
-            }
+    public var errorDescription: String? {
+        switch self {
+        case .tokenNotFound: "Token is not found."
         }
     }
+}
+
+open class TokenProviderInterceptor: Interceptor {
+
 
     public var id: String = UUID().uuidString
 

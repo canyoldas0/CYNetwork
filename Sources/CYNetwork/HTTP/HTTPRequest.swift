@@ -6,16 +6,24 @@ open class HTTPOperation<Request: Requestable> {
         let url: URL
         let httpMethod: HTTPMethod
         var additionalHeaders: [String: String]
+        var additionalQueryItems: [URLQueryItem]
         let data: (any Encodable)?
         
         public var requestName: String {
             String(describing: Request.self)
         }
         
-        public init(url: URL, httpMethod: HTTPMethod, additionalHeaders: [String : String] = [:], data: (any Encodable)? = nil) {
+        public init(
+            url: URL,
+            httpMethod: HTTPMethod,
+            additionalHeaders: [String : String] = [:],
+            additionalQueryItems: [URLQueryItem] = [],
+            data: (any Encodable)? = nil
+        ) {
             self.url = url
             self.httpMethod = httpMethod
             self.additionalHeaders = additionalHeaders
+            self.additionalQueryItems = additionalQueryItems
             self.data = data
         }
     }
@@ -35,6 +43,10 @@ open class HTTPOperation<Request: Requestable> {
     
     public func addHeader(key: String, val: String) {
         properties.additionalHeaders[key] = val
+    }
+    
+    public func addQueryItem(key: String, val: String) {
+        properties.additionalQueryItems.append(.init(name: key, value: val))
     }
 }
 
