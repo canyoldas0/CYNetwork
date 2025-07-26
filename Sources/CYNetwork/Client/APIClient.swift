@@ -89,3 +89,8 @@ public class APIClient {
     }
 }
 
+
+public extension APIClient {
+    @MainActor static var shared: APIClient = .init()
+}
+

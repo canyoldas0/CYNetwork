@@ -22,13 +22,13 @@ public enum URLProvider {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.headers = headers(additionalHeaders)
-        request.url?.append(queryItems: additionalQueryItems)
         
         try configureEncoding(
             method: method,
             data: data,
             request: &request
         )
+        request.url?.append(queryItems: additionalQueryItems)
         
         return request
     }
