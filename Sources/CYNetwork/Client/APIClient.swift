@@ -35,8 +35,23 @@ public final class HTTPResult<Request: Requestable>: @unchecked Sendable {
 
 public typealias HTTPResultHandler<Request: Requestable> = (Result<HTTPResult<Request>, Error>) -> Void
 
-public class APIClient {
-    public private(set) var networkTransporter: NetworkTransportProtocol
+public protocol APIClientProtocol: Sendable {
+    func perform<Request: Requestable>(
+        _ request: Request,
+        dispatchQueue: DispatchQueue,
+        cachePolicy: CachePolicy,
+        completion: @escaping HTTPResultHandler<Request>
+    ) -> (any Cancellable)?
+    
+    func perform<Request: Requestable>(
+        _ request: Request,
+        cachePolicy: CachePolicy,
+        dispatchQueue: DispatchQueue
+    ) async throws -> Request.Data
+}
+
+public final class APIClient: APIClientProtocol {
+    public let networkTransporter: NetworkTransportProtocol
 
     public init(
         networkTransporter: NetworkTransportProtocol

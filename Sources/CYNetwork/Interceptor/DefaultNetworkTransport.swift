@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol NetworkTransportProtocol {
+public protocol NetworkTransportProtocol: Sendable {
     func send<Request: Requestable>(
         request: Request,
         cachePolicy: CachePolicy,
@@ -9,7 +9,7 @@ public protocol NetworkTransportProtocol {
     ) -> (any Cancellable)?
 }
 
-open class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
+public final class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
     let interceptorProvider: InterceptorProvider
 
     public init(interceptorProvider: InterceptorProvider) {
@@ -34,7 +34,7 @@ open class DefaultRequestChainNetworkTransport: NetworkTransportProtocol {
         return chain
     }
 
-    open func makeRequestChain<Request: Requestable>(for operation: HTTPOperation<Request>, dispatchQueue: DispatchQueue) -> RequestChain {
+    public func makeRequestChain<Request: Requestable>(for operation: HTTPOperation<Request>, dispatchQueue: DispatchQueue) -> RequestChain {
         NetworkInterceptChain(
             interceptors: interceptorProvider.interceptors(for: operation),
             dispatchQueue: dispatchQueue,
