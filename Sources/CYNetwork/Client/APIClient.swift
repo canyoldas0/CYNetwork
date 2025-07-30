@@ -38,19 +38,12 @@ public typealias HTTPResultHandler<Request: Requestable> = (Result<HTTPResult<Re
 public protocol APIClientProtocol: Sendable {
     func perform<Request: Requestable>(
         _ request: Request,
-        dispatchQueue: DispatchQueue,
-        cachePolicy: CachePolicy,
-        completion: @escaping HTTPResultHandler<Request>
-    ) -> (any Cancellable)?
-    
-    func perform<Request: Requestable>(
-        _ request: Request,
         cachePolicy: CachePolicy,
         dispatchQueue: DispatchQueue
     ) async throws -> Request.Data
 }
 
-public final class APIClient: APIClientProtocol {
+open class APIClient: APIClientProtocol, @unchecked Sendable {
     public let networkTransporter: NetworkTransportProtocol
 
     public init(
@@ -66,7 +59,7 @@ public final class APIClient: APIClientProtocol {
         self.init(networkTransporter: transporter)
     }
     
-    public func perform<Request: Requestable>(
+    open func perform<Request: Requestable>(
         _ request: Request,
         dispatchQueue: DispatchQueue = .main,
         cachePolicy: CachePolicy = .fetchIgnoringCacheCompletely,
@@ -81,7 +74,7 @@ public final class APIClient: APIClientProtocol {
     }
 
 
-    public func perform<Request: Requestable>(
+    open func perform<Request: Requestable>(
         _ request: Request,
         cachePolicy: CachePolicy = .fetchIgnoringCacheCompletely,
         dispatchQueue: DispatchQueue = .main
